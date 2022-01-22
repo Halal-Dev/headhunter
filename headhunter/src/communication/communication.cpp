@@ -20,6 +20,7 @@ std::string communication_t::read_pipe() const
 
 	while (ReadFile(pipe, buffer, 10000, &bytes_read, NULL)) {
 		read += buffer;
+		memset(buffer, NULL, 10000);
 	}
 	CloseHandle(pipe);
 
