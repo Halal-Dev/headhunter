@@ -25,9 +25,18 @@ int __fastcall scheduler_cycle(std::uintptr_t waiting_scripts_job, int fakearg, 
 		script_queue.pop();
 		guard.unlock();
 
-		rbx_deserialize(execution.scheduler->get_global_luastate(), "headhunter.exe", bytecode.c_str(), bytecode.size());
-		rbx_spawn(execution.scheduler->get_global_luastate());
-		rbx_decrement_top(execution.scheduler->get_global_luastate(), 1);
+		if (bytecode.at(0) == 0)
+		{
+			std::string error("[string \"headhunter.exe\"]");
+			const char* msg = bytecode.c_str() + 1;
+			rbx_output(1, (error + msg).c_str());
+		}
+		else
+		{
+			rbx_deserialize(execution.scheduler->get_global_luastate(), "headhunter.exe", bytecode.c_str(), bytecode.size());
+			rbx_spawn(execution.scheduler->get_global_luastate());
+			rbx_decrement_top(execution.scheduler->get_global_luastate(), 1);
+		}
 	}
 
 	return reinterpret_cast<int(__thiscall*)(std::uintptr_t, int)>(original_func)(waiting_scripts_job, a2);
